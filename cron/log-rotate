@@ -1,1 +1,1 @@
-0 0 * * * mv /app/logs/log.txt /app/logs/$(date --date="yesterday" +'%Y_%m_%d_%s').txt
+0 0 * * * mv /app/logs/log.txt /app/logs/$(log_file_name.sh).txt
