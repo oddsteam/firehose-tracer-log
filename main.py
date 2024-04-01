@@ -24,8 +24,20 @@ if __name__ == "__main__":
     
     def callback(ch, method, properties, body):
         with open('logs/log.txt', 'a') as f:
-            log = json.dumps({"timestamp": datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S.%f"),"body":body.decode(), "method": method.routing_key, "routing_keys": properties.headers["routing_keys"]})
+            body_serialized = serializing_message(body.decode())
+            log = json.dumps({"timestamp": datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S.%f"),"body":body_serialized, "method": method.routing_key, "routing_keys": properties.headers["routing_keys"]})
             f.write(log + "\n")
+    
+    def serializing_message(message):
+        try:
+            json_dict = json.loads(message)
+            if("app_secret" in json_dict):
+                del json_dict["app_secret"]
+            if("appSecret" in json_dict):
+                del json_dict["appSecret"]
+            return json.dumps(json_dict)
+        except:
+            return message
     
     channel.basic_consume(on_message_callback=callback,
                           queue=queue_name,
